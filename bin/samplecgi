@@ -1,0 +1,11 @@
+#!/bin/sh
+
+PATH=/usr/bin:/usr/ucb:/usr/local/bin
+
+echo "Content-type: text/plain"
+
+echo
+
+echo "My home is:    " `tilde`
+echo "My userid is:  " `whoami`
+echo "My groups are: " `groups`

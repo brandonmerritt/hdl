@@ -1,0 +1,88 @@
+#!/bin/sh
+# email - process a form that contains a set of fields
+#  mail_to - required field
+# Narbey's modification (3/12/1996):
+## 	Inserts $FORM_mail_subject in the Subject: of return emails.
+#	Inserts $FORM_mail_from to From:		(4/16/1996)
+##	Revised	to handle nonexistent mail_from, else sendmail 
+#	gives -t errors					(4/25/1996)
+##	Added backurl to give Location: for user defined
+#	thank you page; overides the 'backtext' group	(4/27/1996)
+
+PATH=/usr/local/bin:/usr/bin:/usr/ucb
+ECHO=/usr/5bin/echo
+
+#	ECHO a single Content-type: with no newline. Error messages or 
+#	other outputs will supply their own newline.
+
+$ECHO Content-type: text/html
+
+if [ "$CONTENT_LENGTH" -lt 1 ] ; then
+        $ECHO
+        $ECHO "ERROR:"
+	$ECHO "This script can only be run from a"
+        $ECHO "North Shore Access form."
+	exit 1
+fi
+
+eval `cgiparse -init`
+if [ $? -ne 0 ] ; then
+        $ECHO
+	$ECHO "Error 01"
+	exit 1
+fi
+eval `cgiparse -form`
+if [ $? -ne 0 ] ; then
+        $ECHO
+	$ECHO "Error 02"
+	exit 1
+fi
+
+if [ -z "$FORM_mail_to" ] ; then
+        $ECHO
+	$ECHO "ERROR: recipient must be filled in."
+	exit 1
+elif echo $FORM_mail_to | grep -q -s -v @; then
+	# No '@' sign it's not an email address.  Tack @shore.net to the end.
+        FORM_mail_to="$FORM_mail_to@shore.net"
+fi
+
+
+if [ -z "$FORM_mail_from" ] ; then
+   from='nobody@shore.net'
+else
+   from="$FORM_mail_from"
+fi
+
+{
+$ECHO "Reply-to: $FORM_mail_from" ;
+$ECHO "To: $FORM_mail_to" ;
+$ECHO "Subject: $FORM_mail_subject" ;
+$ECHO ""
+cgiparse -form -prefix "" | sed -e 's/; /\
+/g'
+} | /usr/lib/sendmail -f"$from" -t
+
+# New routine. Take backurl which holds URL to user created thank you page
+if [ -z "$FORM_backurl" ] ; then
+   $ECHO
+   if [ -z "$FORM_confirmtext" ] ; then
+      $ECHO Thank you for your submission.
+   else
+      $ECHO "$FORM_confirmtext"
+   fi
+   if [ ! -z "$FORM_backanchor" ] ; then
+      $ECHO '<p><a href="'"$FORM_backanchor"'">'
+      if [ ! -z "$FORM_backimg" ] ; then
+         $ECHO '<img src="'"$FORM_backimg"'">'
+      fi
+      if [ ! -z "$FORM_backtext" ] ; then
+         $ECHO "$FORM_backtext</a>"
+      else
+         $ECHO "Return</a>"
+      fi
+   fi
+else
+   $ECHO "Location: $FORM_backurl"
+   $ECHO
+fi
