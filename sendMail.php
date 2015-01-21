@@ -24,7 +24,7 @@ $message = $message."Comments/Questions  		: ".$_POST['Comments']."\n";
         $subject ="Highway Driver & Leasing Submission "; 
 		
 
-		    $ok=mail("info@highwaydriverleasing.com",$subject,$message,$headers);
+		    $ok=mail("wmacpherson@highwaydriverleasing.com",$subject,$message,$headers);
 			//$ok=mail("mike@multisoltech.com",$subject,$message,$headers);
   		   
 ?>

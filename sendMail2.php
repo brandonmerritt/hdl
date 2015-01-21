@@ -11,11 +11,11 @@ $message = $message."Email Address  			: ".$_POST['Email']."\n";
 
 
 
-	$headers .= "From: <info@highwaydriverleasing.com>\r\n"; 				
+	$headers .= "From: <wmacpherson@highwaydriverleasing.com>\r\n"; 				
         $subject ="REQUEST A DRIVER OR FURTHER INFORMATION"; 
 		
 
-		    $ok=mail("info@highwaydriverleasing.com",$subject,$message,$headers);
+		    $ok=mail("wmacpherson@highwaydriverleasing.com",$subject,$message,$headers);
 			//$ok=mail("webmaster@multisoltech.com",$subject,$message,$headers);
 
   		   
